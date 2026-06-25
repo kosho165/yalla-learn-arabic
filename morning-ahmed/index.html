@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Egyptian Arabic App - Ahmed's Morning</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --primary-purple: #7c4dff; --hover-purple: #651fff; --bg-color: #f4f6f8; --text-color: #4a148c; --border-color: #d1d9e6; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(244, 246, 248, 0.5), rgba(244, 246, 248, 0.5)), url('images/egypt.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        
+        /* زرار الرجوع للقصص */
+        .back-to-home { align-self: flex-start; max-width: 600px; width: 100%; margin: 0 auto 15px auto; }
+        .back-link { text-decoration: none; color: var(--primary-purple); font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 16px; transition: 0.3s; }
+        .back-link:hover { color: var(--hover-purple); transform: translateX(-5px); }
+
+        .main-card { background-color: #ffffff; width: 100%; max-width: 600px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); padding: 30px 30px 20px 30px; position: relative; overflow: hidden; display: flex; flex-direction: column; align-items: center;}
+        
+        /* اللوجو الخلفي */
+        .watermark { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 450px; opacity: 0.14; z-index: 0; pointer-events: none; }
+        
+        .app-screen { position: relative; z-index: 1; width: 100%; text-align: center; display: none; }
+        .app-screen.active { display: block; animation: fadeIn 0.4s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Welcome Screen */
+        #screen-welcome { display: none; text-align: center; width: 100%; }
+        #screen-welcome.active { display: flex; flex-direction: column; align-items: center; animation: fadeIn 0.4s; }
+        .welcome-logo { width: 140px; border-radius: 15px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); margin: 0 auto 10px auto; display: block; }
+        .welcome-title-large { color: #2e7d32; font-size: 26px; font-weight: 700; margin: 10px 0; text-align: center; }
+        .welcome-subtitle-large { color: #666; font-size: 16px; margin-bottom: 30px; text-align: center; }
+        .input-group { margin-bottom: 15px; text-align: left; width: 100%; }
+        .input-group label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 5px; color: #000; }
+        .input-group input { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; font-family: 'Poppins', sans-serif; font-size: 16px; }
+        .input-group input:focus { outline: none; border-color: var(--primary-purple); }
+        
+        /* زرار GO أصبح مفعلاً دائماً بلون بنفسجي */
+        .btn-go { background-color: var(--primary-purple); color: white; border: none; padding: 12px 40px; font-size: 18px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 10px; transition: 0.3s; width: 100%; }
+        .btn-go:hover { background-color: var(--hover-purple); }
+
+        /* Menu */
+        #screen-menu { display: none; text-align: center; width: 100%; }
+        #screen-menu.active { display: block; animation: fadeIn 0.4s; }
+        h1.menu-main-title { color: var(--primary-purple); font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+        p.menu-sub-title { text-align: center; color: var(--primary-purple); font-size: 16px; margin-bottom: 25px; }
+        .menu-list { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+        .menu-item { background: white; border: 2px solid var(--border-color); border-radius: 12px; padding: 15px 20px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: flex-start; width: 100%; text-align: left;}
+        .menu-item:hover { border-color: var(--primary-purple); background-color: #f7f1ff; box-shadow: 0 4px 8px rgba(124, 77, 255, 0.1); }
+        .menu-item .icon { font-size: 24px; margin-right: 15px; }
+        .item-text { display: flex; flex-direction: column; text-align: left; }
+        .item-text .main { font-size: 18px; font-weight: bold; color: #333; transition: 0.3s; }
+        .menu-item:hover .item-text .main { color: var(--primary-purple); }
+        .btn-back { background: none; border: none; color: var(--primary-purple); font-size: 16px; font-weight: bold; cursor: pointer; margin-bottom: 20px; display: flex; align-items: center; gap: 5px; justify-content: center; width: 100%;}
+
+        /* Video Container */
+        .video-container { width: 100%; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 20px; border: 2px solid var(--border-color); position: relative; z-index: 2; padding-bottom: 56.25%; height: 0;}
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+
+        /* Learn Lines */
+        h1.lines-main-title { color: var(--text-color); font-size: 26px; font-weight: 700; text-align: center; margin-bottom: 25px; }
+        .dialogue-box { background: rgba(255,255,255,0.9); border: 2px solid var(--border-color); border-radius: 15px; padding: 30px; text-align: center; display: flex; flex-direction: column; align-items: center; width: 100%; margin-top: 15px;}
+        .char-name { font-weight: bold; color: var(--primary-purple); font-size: 20px; margin-bottom: 15px; text-align: center;}
+        .dial-main { font-size: 24px; font-weight: bold; color: #333; line-height: 1.6; direction: rtl; text-align: center; width: 100%;}
+        .nav-buttons-learn { display: flex; justify-content: space-between; align-items: center; margin-top: 20px; width: 100%; gap: 10px; }
+        .btn-side { background: white; border: 1px solid var(--border-color); color: var(--text-color); padding: 12px 10px; border-radius: 10px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; flex: 1; text-align: center; font-size: 14px;}
+        .btn-listen { background-color: #4caf50; color: white; border: none; padding: 15px 10px; border-radius: 10px; font-weight: bold; font-size: 14px; flex: 1.5; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px;}
+        
+        /* تأثير النبض لزر التسجيل */
+        @keyframes pulse-record {
+            0% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(244, 67, 54, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+        .recording-active { animation: pulse-record 1.5s infinite; background-color: #f44336 !important; color: white !important; }
+
+        /* Flashcards */
+        .flashcard { width: 100%; height: 280px; perspective: 1000px; margin: 20px 0; cursor: pointer;}
+        .card-inner { width: 100%; height: 100%; border: 2px solid var(--border-color); border-radius: 15px; transition: transform 0.6s; transform-style: preserve-3d; position: relative; }
+        .card-inner.is-flipped { transform: rotateY(180deg); }
+        .card-front, .card-back { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; display: flex; flex-direction: column; justify-content: center; align-items: center; border-radius: 15px; background-color: rgba(255, 255, 255, 0.9); padding: 20px; text-align: center;}
+        .card-back { transform: rotateY(180deg); background-color: rgba(250, 245, 255, 0.95); border: 2px solid var(--primary-purple); }
+        .card-image { width: 130px; height: 130px; object-fit: cover; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); }
+        .main-word { font-size: 30px; font-weight: 700; color: var(--text-color); direction: rtl; text-align: center; }
+        .sub-word { font-size: 22px; color: var(--primary-purple); font-weight: bold; margin-bottom: 10px;}
+        .example-text { font-size: 18px; color: #555; font-weight: bold; margin-top: 10px; direction: rtl; text-align: center;}
+        .nav-buttons { display: flex; justify-content: space-between; gap: 15px; margin-top: 20px; align-items: center; width: 100%;}
+        .btn-nav { background: white; border: 2px solid var(--border-color); color: var(--text-color); padding: 10px 20px; border-radius: 10px; cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: bold; flex: 1; text-align: center;}
+
+        /* Quiz */
+        .quiz-option-btn { background: rgba(255, 255, 255, 0.9); border: 2px solid var(--primary-purple); color: var(--text-color); padding: 15px; border-radius: 12px; cursor: pointer; font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: bold; width: 100%; margin-bottom: 12px; transition: 0.3s; direction: rtl; text-align: center; }
+        .quiz-option-btn:hover:not(:disabled) { background-color: var(--primary-purple); color: white; }
+        .quiz-option-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .result-box { display: none; text-align: center; padding: 30px; background: rgba(250, 245, 255, 0.95); border: 3px solid var(--primary-purple); border-radius: 15px; margin-top: 20px; width: 100%;}
+        .score-text { font-size: 50px; font-weight: bold; margin-bottom: 20px; color: var(--primary-purple);}
+
+        .btn-action { background-color: var(--primary-purple); color: white; border: none; padding: 15px 25px; border-radius: 20px; cursor: pointer; margin: 10px auto; display: flex; align-items: center; justify-content: center; width: 100%; font-family: 'Poppins', sans-serif; font-size: 16px; font-weight: bold; transition: 0.3s;}
+        
+        .lw-input { width: 100%; padding: 15px; font-size: 24px; text-align: center; border: 2px solid var(--border-color); border-radius: 10px; margin-bottom: 15px; direction: rtl; }
+
+        /* Footer */
+        .footer { text-align: center; margin-top: 25px; color: #aaa; font-size: 12px; width: 100%; padding-top: 15px; border-top: 1px solid #eee; position: relative; z-index: 10; display: block;}
+    </style>
+</head>
+<body>
+
+    <div class="back-to-home">
+        <a href="../index.html" class="back-link">⬅️ Back to Stories - العودة للقصص</a>
+    </div>
+
+    <div class="main-card">
+        <img src="images/logo.png" class="watermark" alt="Watermark" onerror="this.style.display='none'">
+
+        <div id="screen-welcome" class="app-screen active">
+            <img src="images/logo.png" alt="App Logo" class="welcome-logo" onerror="this.src='https://via.placeholder.com/140'">
+            <h1 class="welcome-title-large">صباح الخير يا أحمد</h1>
+            <p class="welcome-subtitle-large">Interactive Course</p>
+            
+            <div class="input-group">
+                <label>Class Code</label>
+                <input type="text" id="classCode" value="1">
+            </div>
+            <div class="input-group">
+                <label>Name</label>
+                <input type="text" id="userName" placeholder="Enter your name...">
+            </div>
+            <button id="btnGo" class="btn-go" onclick="tryLogin()">GO</button>
+        </div>
+
+        <div id="screen-menu" class="app-screen">
+            <h1 class="menu-main-title">Egyptian Arabic Course</h1>
+            <p class="menu-sub-title">Interactive Arabic Lessons</p>
+            <div class="menu-list">
+                <button class="menu-item" onclick="showScreen('screen-video')">
+                    <span class="icon">🎬</span><div class="item-text"><span class="main">1. Watch Story</span></div>
+                </button>
+                <button class="menu-item" onclick="startFlashcards()">
+                    <span class="icon">🃏</span><div class="item-text"><span class="main">2. Difficult Words</span></div>
+                </button>
+                <button class="menu-item" onclick="startQuiz()">
+                    <span class="icon">🎯</span><div class="item-text"><span class="main">3. Words Quiz</span></div>
+                </button>
+                <button class="menu-item" onclick="startLearnLines()">
+                    <span class="icon">🗣️</span><div class="item-text"><span class="main">4. Learn Lines & Record</span></div>
+                </button>
+                <button class="menu-item" onclick="startListenWrite()">
+                    <span class="icon">✍️</span><div class="item-text"><span class="main">5. Listen & Write</span></div>
+                </button>
+            </div>
+        </div>
+
+        <div id="screen-video" class="app-screen">
+            <button class="btn-back" onclick="showScreen('screen-menu')">↩ Back to Menu</button>
+            <h1 class="lines-main-title">Watch Story</h1>
+            <div class="video-container">
+                <iframe src="https://drive.google.com/file/d/1AOTLrUBKBh27-3dxOwVa2LwG73OOPpeh/preview" allow="autoplay" allowfullscreen></iframe>
+            </div>
+        </div>
+
+        <div id="screen-flashcards" class="app-screen">
+            <button class="btn-back" onclick="showScreen('screen-menu'); stopAudio('wordAudio');">↩ Back to Menu</button>
+            <h1 class="lines-main-title">Difficult Words</h1>
+            <div class="flashcard" onclick="flipCard()">
+                <div class="card-inner" id="myCard">
+                    <div class="card-front">
+                        <img id="cardImage" src="images/word1.jpg" class="card-image" onerror="this.src='https://via.placeholder.com/130'">
+                        <p class="main-word" id="frontWord">Word</p>
+                    </div>
+                    <div class="card-back">
+                        <p class="sub-word" id="backWord">Meaning</p>
+                        <p class="example-text" id="backExample">Example</p>
+                    </div>
+                </div>
+            </div>
+            <button class="btn-action" style="background:#4caf50;" onclick="playWordAudio()">🔊 Listen</button>
+            <audio id="wordAudio"></audio>
+            <div class="nav-buttons">
+                <button class="btn-nav" onclick="prevCard()">Prev</button>
+                <span id="pageNum" style="font-weight:bold; font-size:18px; color: var(--text-color);">1 / 10</span>
+                <button class="btn-nav" onclick="nextCard()">Next</button>
+            </div>
+        </div>
+
+        <div id="screen-quiz" class="app-screen">
+            <button class="btn-back" onclick="showScreen('screen-menu'); stopAudio('quizWordAudio');">↩ Back to Menu</button>
+            <h1 class="lines-main-title">Words Quiz</h1>
+            <div id="quiz-question-area" style="display: flex; flex-direction: column; align-items: center;">
+                <img id="quizImage" src="images/word1.jpg" alt="Quiz Image" style="width: 100%; max-width: 250px; border-radius: 15px; margin-bottom: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);" onerror="this.src='https://via.placeholder.com/250'">
+                <button class="btn-action" onclick="playQuizAudio()" style="margin-bottom: 20px; width: auto; padding: 10px 20px;">🔊 Listen to word</button>
+                <div id="quiz-options" style="width: 100%;"></div>
+                <button id="quizNextBtn" class="btn-action" onclick="nextQuizQuestion()" style="display: none; background: #4caf50; margin-top: 15px;">Next Question ➡️</button>
+                <p id="quizProgress" style="text-align:center; font-weight:bold; color:var(--primary-purple); margin-top: 15px; font-size: 18px;"></p>
+            </div>
+            <div id="quiz-result-area" class="result-box">
+                <h2>Finished!</h2><p id="finalScore" class="score-text">0%</p>
+                <button class="btn-action" onclick="showScreen('screen-menu')">Back to Menu</button>
+            </div>
+            <audio id="quizWordAudio"></audio>
+            <audio id="correctAudio" src="audio/correct.mp3"></audio>
+            <audio id="wrongAudio" src="audio/wrong.mp3"></audio>
+        </div>
+
+        <div id="screen-learn-lines" class="app-screen">
+            <button class="btn-back" onclick="showScreen('screen-menu'); stopAudio('learnAudio'); stopAudio('myVoiceAudio');">↩ Back to Menu</button>
+            <h1 class="lines-main-title">Learn Lines & Record</h1>
+            <div class="dialogue-box">
+                <img src="images/hisham.jpg" alt="Teacher Hisham" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; margin-bottom: 10px; border: 3px solid var(--primary-purple); box-shadow: 0 4px 10px rgba(0,0,0,0.1);" onerror="this.src='https://via.placeholder.com/90'">
+                <p class="char-name">Teacher Hisham</p>
+                
+                <p class="dial-main" id="learnText">أحمد بيصحى بدري قوي</p>
+                
+                <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px; width: 100%;">
+                    <button id="btnRecordLine" class="btn-action" style="background:#e91e63; flex: 1; font-size: 14px;" onclick="toggleRecording()">🎙️ Record / سجل</button>
+                    <button id="btnPlayMyVoice" class="btn-action" style="background:#2196f3; flex: 1; font-size: 14px; display:none;" onclick="playMyVoice()">▶️ Compare / قارن</button>
+                </div>
+            </div>
+            
+            <div class="nav-buttons-learn">
+                <button class="btn-side" onclick="prevLearnLine()">Prev / السابق</button>
+                <button class="btn-listen" onclick="playLearnLineAudio()">🔊 Listen / استمع</button>
+                <button class="btn-side" onclick="nextLearnLine()">Next / التالي</button>
+            </div>
+            <p id="learnStatus" style="text-align:center; margin-top:20px; font-weight:bold; color:#888;">Line: 1 / 9</p>
+
+            <button id="btnPlayAllVoice" class="btn-action" style="background:#ff9800; display:none; margin-top: 20px; width: 100%;" onclick="playAllMyVoices()">🎧 Listen to my story / اسمع قصتي</button>
+
+            <audio id="learnAudio"></audio>
+            <audio id="myVoiceAudio"></audio>
+        </div>
+
+        <div id="screen-listen-write" class="app-screen">
+            <button class="btn-back" onclick="showScreen('screen-menu'); stopAudio('lwAudio');">↩ Back to Menu</button>
+            <h1 class="lines-main-title">Listen & Write</h1>
+            <div id="lw-content-area" class="dialogue-box" style="margin-top: 0;">
+                <button class="btn-action" onclick="playLwAudio()" style="background:#00bcd4; margin-bottom: 20px;">🔊 Listen</button>
+                <input type="text" id="lwInput" class="lw-input" placeholder="اكتب هنا...">
+                <button class="btn-action" id="lwCheckBtn" onclick="checkLwAnswer()">✅ Check</button>
+                <p id="lwFeedback" style="font-weight:bold; margin-top:15px; font-size:20px; display:none;"></p>
+                <button class="btn-action" id="lwNextBtn" onclick="nextLwWord()" style="display:none; background:var(--primary-purple); margin-top: 15px;">Next Word</button>
+            </div>
+            <div id="lw-result-area" class="result-box">
+                <h2>Finished!</h2><p id="lwFinalScore" class="score-text">0%</p>
+                <button class="btn-action" onclick="showScreen('screen-menu')">Back to Menu</button>
+            </div>
+            <audio id="lwAudio"></audio>
+        </div>
+
+        <div class="footer active">
+            <p>Created for Yalla Learn Arabic</p>
+            <p style="color:var(--primary-purple); font-weight:bold;">Created by : Hisham Embaby</p>
+        </div>
+    </div>
+
+    <script>
+        // Core Navigation
+        function showScreen(id) {
+            document.querySelectorAll('.app-screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            
+            document.querySelectorAll('audio, iframe').forEach(m => { 
+                if(m.tagName === 'IFRAME') { 
+                    let s = m.src; m.src = s; 
+                } else { 
+                    m.pause(); m.currentTime = 0; 
+                } 
+            });
+        }
+
+        function stopAudio(audioId) {
+            let audio = document.getElementById(audioId);
+            if(audio) { audio.pause(); audio.currentTime = 0; }
+        }
+
+        // Welcome Screen (تم إزالة شروط التعطيل المزعجة)
+        function tryLogin() { showScreen('screen-menu'); }
+
+        // --- Data ---
+        const storyLines = [
+            "أحمد بيصحى بدري قوي",
+            "أحمد بيغسل وشه",
+            "بيشرب كوباية شاي",
+            "وبياكل عيش وجبنة",
+            "أحمد بيلبس هدومه",
+            "وبيروح الشغل",
+            "أحمد بيشوف صحابه",
+            "أحمد بيقول صباح الخير لصحابه",
+            "أحمد سعيد ومبسوط"
+        ];
+
+        const wordsData = [
+            { main: "بيصحى بدري قوي", sub: "Ahmed wakes up very early.", ex: "أحمد بيصحى بدري قوي." },
+            { main: "بيغسل وشه", sub: "Ahmed washes his face.", ex: "أحمد بيغسل وشه." },
+            { main: "بيلبس هدومه", sub: "Ahmed puts on his clothes.", ex: "أحمد بيلبس هدومه." },
+            { main: "كوباية شاي", sub: "This is a cup of tea.", ex: "دي كوباية شاي." },
+            { main: "عيش", sub: "This is bread.", ex: "ده عيش." },
+            { main: "جبنة", sub: "This is cheese.", ex: "دي جبنة." },
+            { main: "بيروح الشغل", sub: "Ahmed goes to work.", ex: "أحمد بيروح الشغل." },
+            { main: "بيشوف صحابه", sub: "Ahmed sees his friends.", ex: "أحمد بيشوف صحابه." },
+            { main: "مبسوط", sub: "Ahmed is happy.", ex: "أحمد مبسوط." },
+            { main: "سعيد", sub: "Ahmed is glad.", ex: "أحمد سعيد." }
+        ];
+
+        // --- Flashcards Logic ---
+        let curCard = 1;
+        function startFlashcards() { curCard = 1; updateCard(); showScreen('screen-flashcards'); }
+        function flipCard() { document.getElementById('myCard').classList.toggle('is-flipped'); }
+        function updateCard() { 
+            let w = wordsData[curCard-1]; 
+            document.getElementById('frontWord').innerText = w.main; 
+            document.getElementById('backWord').innerText = w.sub; 
+            document.getElementById('backExample').innerText = w.ex; 
+            document.getElementById('pageNum').innerText = `${curCard} / 10`; 
+            document.getElementById('wordAudio').src = `audio/word${curCard}.mp3`; 
+            document.getElementById('cardImage').src = `images/word${curCard}.jpg`;
+            document.getElementById('myCard').classList.remove('is-flipped');
+        }
+        function nextCard() { if(curCard < 10) { curCard++; updateCard(); } }
+        function prevCard() { if(curCard > 1) { curCard--; updateCard(); } }
+        function playWordAudio() { document.getElementById('wordAudio').play().catch(e=>{}); }
+
+        // --- Quiz Logic ---
+        let qIdx = 0, score = 0;
+        function startQuiz() { qIdx = 0; score = 0; showScreen('screen-quiz'); loadQ(); document.getElementById('quiz-question-area').style.display = 'flex'; document.getElementById('quiz-result-area').style.display = 'none'; }
+        function loadQ() {
+            document.getElementById('quizNextBtn').style.display = 'none';
+            let opts = document.getElementById('quiz-options'); opts.innerHTML = '';
+            let cor = wordsData[qIdx].main;
+            document.getElementById('quizImage').src = `images/word${qIdx+1}.jpg`;
+
+            let pool = wordsData.filter(w => w.main !== cor).sort(() => 0.5 - Math.random()).slice(0,3).map(w => w.main);
+            [cor, ...pool].sort(() => 0.5 - Math.random()).forEach(o => { 
+                let b = document.createElement('button'); 
+                b.className='quiz-option-btn'; 
+                b.innerText=o; 
+                b.disabled = true;
+                b.onclick=()=> { 
+                    document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = true);
+                    if(o===cor) {
+                        b.style.backgroundColor = '#4caf50'; b.style.color = 'white'; 
+                        document.getElementById('correctAudio').play().catch(e=>{});
+                        score++; 
+                    } else {
+                        b.style.backgroundColor = '#f44336'; b.style.color = 'white'; 
+                        document.getElementById('wrongAudio').play().catch(e=>{});
+                        document.querySelectorAll('.quiz-option-btn').forEach(btn => {
+                            if(btn.innerText === cor) { btn.style.backgroundColor = '#4caf50'; btn.style.color = 'white'; }
+                        });
+                    }
+                    document.getElementById('quizNextBtn').style.display = 'block';
+                }; 
+                opts.appendChild(b); 
+            });
+            document.getElementById('quizProgress').innerText = `Question: ${qIdx+1} / 10`; 
+            document.getElementById('quizWordAudio').src=`audio/word${qIdx+1}.mp3`;
+        }
+        function playQuizAudio() { 
+            document.getElementById('quizWordAudio').play().catch(e=>{}); 
+            document.querySelectorAll('.quiz-option-btn').forEach(btn => btn.disabled = false);
+        }
+        function nextQuizQuestion() { qIdx++; if(qIdx<10) loadQ(); else showRes(); }
+        function showRes() { 
+            document.getElementById('quiz-question-area').style.display='none'; 
+            document.getElementById('quiz-result-area').style.display='block'; 
+            let p = (score/10)*100;
+            let s = document.getElementById('finalScore');
+            s.innerHTML = `${score} / 10<br><span style="font-size:30px;">(${Math.round(p)}%)</span>`; 
+            s.style.color = p >= 50 ? '#4caf50' : '#f44336';
+        }
+
+        // --- Learn Lines Logic (WITH RECORDING) ---
+        let learnIdx = 0;
+        let learnAudio = document.getElementById('learnAudio');
+        let myVoiceAudio = document.getElementById('myVoiceAudio');
+        let mediaRecorder;
+        let audioChunks = [];
+        let userAudioBlobs = new Array(9).fill(null);
+        let isRecording = false;
+
+        function startLearnLines() { learnIdx = 0; updateLearn(); showScreen('screen-learn-lines'); }
+        
+        function updateLearn() { 
+            document.getElementById('learnText').innerText = storyLines[learnIdx]; 
+            document.getElementById('learnStatus').innerText = `Line: ${learnIdx+1} / 9`; 
+            learnAudio.src = `dialogues/line${learnIdx+1}.mp3`; 
+            
+            let btnRecord = document.getElementById('btnRecordLine');
+            let btnPlayMyVoice = document.getElementById('btnPlayMyVoice');
+            let btnPlayAll = document.getElementById('btnPlayAllVoice');
+            
+            if(isRecording) { toggleRecording(); }
+            
+            btnRecord.innerHTML = '🎙️ Record / سجل';
+            btnRecord.classList.remove('recording-active');
+            btnRecord.style.background = '#e91e63';
+            
+            btnPlayMyVoice.style.display = userAudioBlobs[learnIdx] ? 'block' : 'none';
+            
+            const hasAny = userAudioBlobs.some(b => b !== null);
+            btnPlayAll.style.display = hasAny ? 'block' : 'none';
+        }
+        
+        function nextLearnLine() { if(learnIdx < 8) { learnIdx++; updateLearn(); learnAudio.play().catch(e=>{}); } } 
+        function prevLearnLine() { if(learnIdx > 0) { learnIdx--; updateLearn(); learnAudio.play().catch(e=>{}); } }
+        function playLearnLineAudio() { learnAudio.play().catch(e => {}); }
+
+        async function toggleRecording() {
+            const btn = document.getElementById('btnRecordLine');
+            if(!isRecording) {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    mediaRecorder = new MediaRecorder(stream);
+                    audioChunks = [];
+                    mediaRecorder.ondataavailable = e => { if(e.data.size > 0) audioChunks.push(e.data); };
+                    mediaRecorder.onstop = () => {
+                        userAudioBlobs[learnIdx] = new Blob(audioChunks, { type: 'audio/mp3' });
+                        document.getElementById('btnPlayMyVoice').style.display = 'block';
+                        document.getElementById('btnPlayAllVoice').style.display = 'block';
+                    };
+                    mediaRecorder.start();
+                    isRecording = true;
+                    btn.innerHTML = '⏹️ Stop / إيقاف';
+                    btn.classList.add('recording-active');
+                } catch(err) { alert('Please allow microphone access.'); }
+            } else {
+                mediaRecorder.stop();
+                mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                isRecording = false;
+                btn.innerHTML = '🎙️ Record / سجل';
+                btn.classList.remove('recording-active');
+                btn.style.background = '#e91e63';
+            }
+        }
+
+        function playMyVoice() {
+            if(userAudioBlobs[learnIdx]) {
+                myVoiceAudio.src = URL.createObjectURL(userAudioBlobs[learnIdx]);
+                myVoiceAudio.play();
+            }
+        }
+
+        let currentPlayAllIdx = 0;
+        function playAllMyVoices() { currentPlayAllIdx = 0; playNextRecordedVoice(); }
+        
+        function playNextRecordedVoice() {
+            while(currentPlayAllIdx < 9 && !userAudioBlobs[currentPlayAllIdx]) { currentPlayAllIdx++; }
+            
+            if(currentPlayAllIdx < 9) {
+                myVoiceAudio.src = URL.createObjectURL(userAudioBlobs[currentPlayAllIdx]);
+                learnIdx = currentPlayAllIdx;
+                document.getElementById('learnText').innerText = storyLines[learnIdx]; 
+                document.getElementById('learnStatus').innerText = `Playing Line: ${learnIdx+1} / 9`; 
+                
+                myVoiceAudio.onended = () => { currentPlayAllIdx++; playNextRecordedVoice(); };
+                myVoiceAudio.play();
+            } else {
+                learnIdx = 8;
+                updateLearn();
+                alert("Finished playing your story! / انتهى تشغيل قصتك!");
+            }
+        }
+
+        // --- Listen Write Logic ---
+        let lwIdx = 0, lwScore = 0;
+        function startListenWrite() { lwIdx = 0; lwScore = 0; showScreen('screen-listen-write'); loadLw(); document.getElementById('lw-content-area').style.display = 'block'; document.getElementById('lw-result-area').style.display = 'none'; }
+        function loadLw() { 
+            document.getElementById('lwInput').value=''; 
+            document.getElementById('lwInput').disabled = false;
+            document.getElementById('lwCheckBtn').style.display = 'block';
+            document.getElementById('lwFeedback').style.display='none'; 
+            document.getElementById('lwNextBtn').style.display='none'; 
+            document.getElementById('lwAudio').src=`audio/word${lwIdx+1}.mp3`; 
+            setTimeout(() => document.getElementById('lwInput').focus(), 100);
+        }
+        function playLwAudio() { document.getElementById('lwAudio').play().catch(e=>{}); }
+        function checkLwAnswer() { 
+            let ans = document.getElementById('lwInput').value.trim(); 
+            if(!ans) return;
+            document.getElementById('lwInput').disabled = true;
+            document.getElementById('lwCheckBtn').style.display = 'none';
+            let fb = document.getElementById('lwFeedback');
+            if(ans === wordsData[lwIdx].main) { 
+                lwScore++;
+                fb.innerText='Excellent! Correct answer 👏'; 
+                fb.style.color = '#4caf50';
+                document.getElementById('correctAudio').play().catch(e=>{});
+            } else { 
+                fb.innerHTML=`Wrong ❌<br><span style="font-size:16px; color:#555;">Correct: ${wordsData[lwIdx].main}</span>`; 
+                fb.style.color = '#f44336';
+                document.getElementById('wrongAudio').play().catch(e=>{});
+            } 
+            fb.style.display='block'; 
+            document.getElementById('lwNextBtn').style.display='block';
+        }
+        function nextLwWord() { 
+            lwIdx++; 
+            if(lwIdx<10) {
+                loadLw(); 
+            } else {
+                document.getElementById('lw-content-area').style.display='none'; 
+                document.getElementById('lw-result-area').style.display='block';
+                let p = (lwScore/10)*100;
+                let s = document.getElementById('lwFinalScore');
+                s.innerHTML = `${lwScore} / 10<br><span style="font-size:30px;">(${Math.round(p)}%)</span>`; 
+                s.style.color = p >= 50 ? '#4caf50' : '#f44336';
+            }
+        }
+        document.getElementById('lwInput').addEventListener('keypress', function (e) { if (e.key === 'Enter') checkLwAnswer(); });
+
+    </script>
+</body>
+</html>
