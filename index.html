@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yalla Learn Arabic - Egyptian Dialect</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --primary-purple: #7c4dff; --hover-purple: #651fff; --bg-color: #f4f6f8; --text-color: #4a148c; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body { 
+            font-family: 'Poppins', 'Cairo', sans-serif; 
+            background-color: var(--bg-color);
+            background-image: linear-gradient(rgba(244, 246, 248, 0.5), rgba(244, 246, 248, 0.5)), url('images/egypt.jpg');
+            background-size: cover; background-position: center; background-attachment: fixed;
+            display: flex; flex-direction: column; align-items: center; min-height: 100vh; padding: 40px 20px; 
+        }
+
+        .main-card { 
+            background-color: rgba(255, 255, 255, 0.96); width: 100%; max-width: 800px; border-radius: 20px; 
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2); padding: 40px; position: relative; 
+            display: flex; flex-direction: column; align-items: center; backdrop-filter: blur(8px);
+        }
+
+        .header-section { text-align: center; margin-bottom: 40px; width: 100%; border-bottom: 2px solid #eee; padding-bottom: 20px; }
+        .teacher-img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 5px solid var(--primary-purple); box-shadow: 0 5px 20px rgba(124, 77, 255, 0.4); margin-bottom: 15px; }
+
+        .main-title { color: var(--primary-purple); font-size: 38px; font-weight: 900; font-family: 'Cairo', sans-serif; }
+        .sub-title { color: #555; font-size: 18px; font-weight: bold; margin-top: 5px; }
+
+        .level-section { width: 100%; margin-bottom: 30px; }
+        .level-title { background-color: var(--primary-purple); color: white; padding: 12px 25px; border-radius: 12px; font-size: 22px; font-weight: bold; margin-bottom: 20px; display: inline-block; }
+
+        .stories-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; width: 100%; }
+        
+        .story-card { 
+            background: white; border: 2px solid #e0e6ed; border-radius: 18px; padding: 25px; 
+            text-align: center; text-decoration: none; color: #333; transition: 0.4s ease; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .story-card:hover { border-color: var(--primary-purple); transform: translateY(-8px); box-shadow: 0 12px 25px rgba(124, 77, 255, 0.2); }
+        
+        .story-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 15px;
+            object-fit: cover;
+            margin-bottom: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border: 2px solid var(--primary-purple);
+            transition: 0.3s;
+        }
+        .story-card:hover .story-img {
+            transform: scale(1.05);
+        }
+
+        .story-name { font-size: 22px; font-weight: bold; font-family: 'Cairo', sans-serif; color: var(--text-color); line-height: 1.2; }
+        /* ستايل جديد للترجمة الإنجليزية */
+        .story-name-en { font-size: 14px; font-weight: 700; font-family: 'Poppins', sans-serif; color: #777; margin-top: 5px; }
+
+        .footer { text-align: center; margin-top: 40px; width: 100%; padding-top: 25px; border-top: 2px solid #f0f0f0; }
+        .copyright { color: #444; font-weight: 800; font-size: 16px; font-family: 'Poppins', sans-serif; }
+    </style>
+</head>
+<body>
+    <div class="main-card">
+        <div class="header-section">
+            <img src="images/hisham.jpg" alt="Teacher Hisham" class="teacher-img" onerror="this.src='https://via.placeholder.com/130'">
+            <h1 class="main-title">تطبيق اللهجة المصرية</h1>
+            <p class="sub-title">Learn with Teacher Hisham</p>
+        </div>
+
+        <div class="level-section">
+            <div class="level-title">⭐ Level A1 (المبتدئين)</div>
+            <div class="stories-grid">
+                <a href="sara/index.html" class="story-card">
+                    <img src="images/sara.jpg" alt="قصة سارة" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">قصة سارة</div>
+                    <div class="story-name-en">Sara's Story</div>
+                </a>
+                <a href="mishmish/index.html" class="story-card">
+                    <img src="images/mishmish.jpg" alt="القط مشمش" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">القط مشمش</div>
+                    <div class="story-name-en">Mishmish the Cat</div>
+                </a>
+                <a href="morning-ahmed/index.html" class="story-card">
+                    <img src="images/ahmed.jpg" alt="صباح الخير يا أحمد" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">صباح الخير يا أحمد</div>
+                    <div class="story-name-en">Good Morning Ahmed</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="level-section">
+            <div class="level-title">⭐⭐ Level A2 (المتوسط)</div>
+            <div class="stories-grid">
+                <a href="midnight-story/index.html" class="story-card">
+                    <img src="images/midnight.jpg" alt="حكاية نص الليل" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">حكاية نص الليل</div>
+                    <div class="story-name-en">Midnight Story</div>
+                </a>
+                
+                <a href="Laura's Story in Egypt/index.html" class="story-card">
+                    <img src="images/laura.jpg" alt="قصة لورا في مصر" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">قصة لورا في مصر</div>
+                    <div class="story-name-en">Laura's Story in Egypt</div>
+                </a>
+
+                <!-- تم تعديل الرابط هنا ليتطابق مع اسم الفولدر الجديد -->
+                <a href="my-grandpas-story/index.html" class="story-card">
+                    <img src="images/grandpa.jpg" alt="حكاية جدي" class="story-img" onerror="this.src='https://via.placeholder.com/100'">
+                    <div class="story-name">حكاية جدي</div>
+                    <div class="story-name-en">My Grandpa's Story</div>
+                </a>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p style="color:#888; margin-bottom:5px;">Created for Yalla Learn Arabic</p>
+            <p class="copyright">© All rights reserved to Hisham Embaby 2026</p>
+        </div>
+    </div>
+</body>
+</html>
